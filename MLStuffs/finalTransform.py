@@ -55,47 +55,52 @@ class finalTransform():
         activities = repo['delphi.activities']
         print("Loaded Activities")
 
+        policyCount = policies.count()
+        projectedParticipantsAndPolicies = []
         print("Generating Product of Participants and Policies...")
-        participantsAndPolicies = list(itertools.product(cleanedParticipants, policies))
-        print("Product Generated")
-        print(len(participantsAndPolicies))
-
-        print("Selecting for matching Participants and Policies...")
-        selectedParticipantsAndPolicies = finalTransform.select(participantsAndPolicies, finalTransform.equalParticipantsAndPolicies)
-        print("Selection Complete")
-        print(len(selectedParticipantsAndPolicies))
-
-        selectedParticipantsAndPolicies = []
+        count = 0
         for policy in policies:
-            participant = cleanedParticipants.find({"id": policy["participant_id"]})
-            participant["promo_codes"] = policy["promo_codes"]
-
-        print("Projecting Participants with Policy Promo Code...")
-        projectedParticipantsAndPolicies = finalTransform.project(selectedParticipantsAndPolicies, finalTransform.cleanParticipantsAndPolicies)
-        print("Projection Complete")
+            participant = cleanedParticipants.find_one({"id": policy["participant_id"]})
+            if (participant):
+                count += 1
+                print("Progress:", count/policyCount)
+                participant["promo_codes"] = policy["promo_codes"]
+                participant["policy_id"] = policy["id"]
+                projectedParticipantsAndPolicies.append(participant)
+        print("Product Generated")
         print(len(projectedParticipantsAndPolicies))
 
-
-
-        print("Generating Product of PP and Activities...")
-        ppAndActivities = list(itertools.product(projectedParticipantsAndPolicies, activities.find({"promocodes": {"$ne": "NA"}})))
+        """projectedParticipantsAndPolicies = []
+        print("Generating Product of Participants and Policies...")
+        count = 0
+        for person in cleanedParticipants:
+            policy = policies.find_one({"participant_id": person["id"], "promo_codes": {"$exists": True}})
+            if policy:
+                count += 1
+                print("Progress:", count/cleanedParticipants.count())
+                person["promo_codes"] = policy["promo_codes"]
+                projectedParticipantsAndPolicies.append(person)
         print("Product Generated")
-        print(len(ppAndActivities))
+        print(len(projectedParticipantsAndPolicies))"""
 
-        print("Selecting for matching Promo Codes...")
-        selectedPPAndActivities = finalTransform.select(ppAndActivities, finalTransform.equalPPAndActivities)
-        print("Selection Complete")
-        print(len(selectedPPAndActivities))
-
-        print("Projecting PP with Activity Type...")
-        projectedPPAndActivities = finalTransform.project(selectedPPAndActivities, finalTransform.cleanPPAndActivities)
-        print("Projection Complete")
-        print(len(projectedPPAndActivities))
+        finalSet = []
+        print("Generating Product of PP and Activities...")
+        count = 0
+        for person in projectedParticipantsAndPolicies:
+            activity = activities.find_one({"promocodes": person["promo_codes"]})
+            if activity:
+                count += 1
+                print("Progress:", count/len(projectedParticipantsAndPolicies))
+                person["activity_type"] = activity["activity_type"]
+                finalSet.append(person)
+        print("Product Generated")
+        print(len(finalSet))
+        print(finalSet[0])
 
         print("Saving Data...")
         repo.drop_collection("delphi.finalData")
         repo.create_collection("delphi.finalData")
-        repo['delphi.finalData'].insert_many(projectedPPAndActivities)
+        repo['delphi.finalData'].insert_many(finalSet)
 
         print("Done")
         repo.logout()
