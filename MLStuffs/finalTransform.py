@@ -5,6 +5,7 @@ import uuid
 import requests
 from pymongo import MongoClient
 from dateutil.relativedelta import relativedelta
+import itertools
 
 class finalTransform():
     def union(R, S):
@@ -47,41 +48,53 @@ class finalTransform():
         repo = client.repo
 
         print("Loading Data...")
-
         cleanedParticipants = repo['delphi.cleanedParticipants']
         print("Loaded Participants")
-        policies = repo['delphi.policies']
+        policies = repo['delphi.policies'].find({"promo_codes": {"$exists": True}})
         print("Loaded Policies")
         activities = repo['delphi.activities']
         print("Loaded Activities")
 
         print("Generating Product of Participants and Policies...")
-        participantsAndPolicies = finalTransform.product(cleanedParticipants.find(), policies.find({"promo_codes": {"$exists": True}}))
+        participantsAndPolicies = list(itertools.product(cleanedParticipants, policies))
         print("Product Generated")
+        print(len(participantsAndPolicies))
 
         print("Selecting for matching Participants and Policies...")
         selectedParticipantsAndPolicies = finalTransform.select(participantsAndPolicies, finalTransform.equalParticipantsAndPolicies)
         print("Selection Complete")
+        print(len(selectedParticipantsAndPolicies))
+
+        selectedParticipantsAndPolicies = []
+        for policy in policies:
+            participant = cleanedParticipants.find({"id": policy["participant_id"]})
+            participant["promo_codes"] = policy["promo_codes"]
 
         print("Projecting Participants with Policy Promo Code...")
         projectedParticipantsAndPolicies = finalTransform.project(selectedParticipantsAndPolicies, finalTransform.cleanParticipantsAndPolicies)
         print("Projection Complete")
+        print(len(projectedParticipantsAndPolicies))
+
+
 
         print("Generating Product of PP and Activities...")
-        ppAndActivities = finalTransform.product(projectedParticipantsAndPolicies, activities.find({"promocodes": {"$ne": "NA"}}))
+        ppAndActivities = list(itertools.product(projectedParticipantsAndPolicies, activities.find({"promocodes": {"$ne": "NA"}})))
         print("Product Generated")
+        print(len(ppAndActivities))
 
         print("Selecting for matching Promo Codes...")
         selectedPPAndActivities = finalTransform.select(ppAndActivities, finalTransform.equalPPAndActivities)
         print("Selection Complete")
+        print(len(selectedPPAndActivities))
 
         print("Projecting PP with Activity Type...")
         projectedPPAndActivities = finalTransform.project(selectedPPAndActivities, finalTransform.cleanPPAndActivities)
         print("Projection Complete")
+        print(len(projectedPPAndActivities))
 
         print("Saving Data...")
-        repo.dropCollection("delphi.finalData")
-        repo.createCollection("delphi.finalData")
+        repo.drop_collection("delphi.finalData")
+        repo.create_collection("delphi.finalData")
         repo['delphi.finalData'].insert_many(projectedPPAndActivities)
 
         print("Done")
