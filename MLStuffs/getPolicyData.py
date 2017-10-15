@@ -12,6 +12,7 @@ class getPolicyData():
         repo = client.repo
 
         print("Fetching Policies Data...")
+        #https://v3v10.vitechinc.com/solr/policy_info/select?indent=on&q=promo_codes:[*%20TO%20*]&wt=json&rows=43234
         policiesURL = 'https://v3v10.vitechinc.com/solr/policy_info/select?indent=on&q=*:*&wt=json&rows=1532000'
         policies = requests.get(policiesURL).json()["response"]["docs"]
         print("Saving Policies Data...")        
