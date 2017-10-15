@@ -30,7 +30,7 @@ class transformData():
         married = 1 if (t["marital_status"] == "M") else 0
         birth = datetime.datetime.strptime(t["birth_date"].split("T")[0], "%Y-%m-%d")
         age = relativedelta(datetime.datetime.now(), birth).years
-        return (t["id"], sex, married, age, (t["longitude"], t["latitude"]))
+        return {"id": t["id"], "sex": sex, "married": married, "age": age, "coords": (t["longitude"], t["latitude"])}
 
     @staticmethod
     def execute():
@@ -50,8 +50,8 @@ class transformData():
         cleanedParticipants = transformData.project(participants.find(), transformData.cleanParticipants)
 
         print("Saving Cleaned Participants...")
-        repo.drop_collection("cleanedParticipants")
-        repo.create_collection("cleanedParticipants")
+        repo.drop_collection("delphi.cleanedParticipants")
+        repo.create_collection("delphi.cleanedParticipants")
         repo['delphi.cleanedParticipants'].insert_many(cleanedParticipants)
 
         """repo.dropCollection("activities")
