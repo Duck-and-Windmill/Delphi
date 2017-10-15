@@ -26,9 +26,17 @@ class Trainer(object):
 
 				num, sex, marital_status, age, longitude, latitude, target = Variable(num), Variable(sex), Variable(marital_status), Variable(age), Variable(longitude), Variable(latitude), Variable(target)
 
+				tdata = []
+				tdata.append(num)
+				tdata.append(sex)
+				tdata.append(marital_status)
+				tdata.append(age)
+				tdata.append(longitude)
+				tdata.append(latitude)
+
 				optimizer.zero_grad()
 
-				hypo = self.model(num, sex, marital_status, age, longitude, latitude)
+				hypo = self.model(tdata)
 				loss = self.model.loss(hypo, target)
 
 				loss.backward()
