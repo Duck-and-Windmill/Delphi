@@ -24,13 +24,14 @@ class Dataset(object):
 		prev = 0
 		batch_set = []
 		total = len(dataset)
-
+		print("DAtaset: ", dataset)
 		shuffle(dataset)
 
 		for i in range(int(total/self.batch_size)):
 			points = dataset[prev:prev+self.batch_size] if prev+self.batch_size < total else dataset[prev:]
 			x_coord = []
 			y_coord = []
+			#print("Points: ", points)
 			
 			for (x, y) in points:
 				x_coord.append(x)
