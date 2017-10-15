@@ -3,6 +3,7 @@ from datetime import datetime
 from data import Dataset
 from torch.autograd import Variable
 import torch.optim as optim
+from torch import IntTensor
 
 class Trainer(object):
 	def __init__(self, model, config):
@@ -22,9 +23,9 @@ class Trainer(object):
 		self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
 
 		for e in range(self.epochs):
-			for b, (sample, target) in enumerate(self.dataset.load_dataset('train')):
+			for b in self.dataset.load_dataset('train'):
 
-				sample, target = Variable(sample), Variable(target)
+				sample, target = Variable(b[:7]), Variable(FloatTensor(b[8]))
 
 				optimizer.zero_grad()
 

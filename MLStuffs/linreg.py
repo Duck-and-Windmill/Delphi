@@ -10,9 +10,8 @@ from data import Dataset
 config = {}
 
 # Load the insurance dataset
-dataset = Dataset(1000, 16)
+dataset = Dataset(432340, 16)
 insurance = dataset.load_dataset('train')
-
 
 # Use only one feature
 #insurance_X = insurance[:, np.newaxis, 2]
@@ -22,19 +21,29 @@ insurance = dataset.load_dataset('train')
 insurance_X = []
 insurance_y = []
 
-for b, (sample, target) in enumerate(insurance):
-	insurance_X.append(sample)
-	insurance_y.append(target)
+for b in insurance:
+	#insurance_X.append([b[0][0].double(), b[0][1].double()])
+	insurance_X.append([b[0][0][0], b[0][0][1]])
+	insurance_y.append(b[1][0])
 
-insurance_X_train = insurance[:-10000]
-insurance_X_test = insurance[-10000:]
+
+#insurance_X = insurance_X[:, np.newaxis, 7]
+
+insurance_X_train = np.array(insurance_X[:-5])
+insurance_X_test = np.array(insurance_X[-5:])
 
 # Split the targets into training/testing sets
-insurance_y_train = insurance[:-10000]
-insurance_y_test = insurance[-10000:]
+insurance_y_train = np.array(insurance_y[:-5])
+insurance_y_test = np.array(insurance_y[-5:])
+
+print("X count: ", len(insurance_X))
+print("Y count: ", len(insurance_y))
 
 # Create linear regression object
 regr = linear_model.LinearRegression()
+
+#insurance_X_train = insurance_X_train.reshape(-1, 1)
+#insurance_y_train = insurance_y_train.reshape(-1, 1)
 
 # Train the model using the training sets
 regr.fit(insurance_X_train, insurance_y_train)
