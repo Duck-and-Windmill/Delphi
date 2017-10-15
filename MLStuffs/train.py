@@ -1,5 +1,5 @@
 import os, torch 
-from date import datetime
+from datetime import datetime
 from data import Dataset
 from torch.autograd import Variable
 import torch.optim as optim
@@ -9,7 +9,7 @@ class Trainer(object):
 		self.model = model
 		self.lr = config['lr']
 		self.epochs = config['epochs']
-		self.
+		self.batches = config['batches']
 		self.samples = config['samples']
 		self.dataset = Dataset(self.samples, self.batches)
 
