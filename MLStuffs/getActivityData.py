@@ -1,7 +1,4 @@
-import urllib.request
 import json
-import datetime
-import uuid
 import requests
 from pymongo import MongoClient
 
