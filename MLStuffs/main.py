@@ -1,6 +1,7 @@
 import argparse, os
-from neuralnet import FullyConnected
+from neuralnet import FullyConnectedNet
 from train import Trainer
+
 
 
 def main():
@@ -18,15 +19,15 @@ def main():
 	if args.batch > args.samples:
 		raise Exception("Batch size cannot be larger than total number of samples in dataset")
 
-	if type(args.epoches) != int:
+	if type(args.epochs) != int:
 		raise Exception("Epoches number be an integer. Given "+str(type(args.epoches)))
 
 	if args.samples < 1000:
-		raise Exception("Insufficient training data. Sample size %d < 1000"%args.samples)
+		raise Exception("Insufficient training data. Sample size %d < 1000" %args.samples)
 
-	train_config = {'epochs': args.epoches, 'batchs': args.batch, 'samples':args.samples, 'lr': args.lr}
+	train_config = {'epochs': args.epochs, 'batches': args.batch, 'samples':args.samples, 'lr': args.lr}
 
-	model = FullyConnected()
+	model = FullyConnectedNet()
 
 	t = Trainer(model, train_config)
 	t.train()
