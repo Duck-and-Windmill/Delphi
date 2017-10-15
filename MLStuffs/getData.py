@@ -46,7 +46,7 @@ class getData():
 
         cleanedParticipants = getData.project(participants, getData.cleanData)
         print("Cleaned participants count: ", len(cleanedParticipants))
-        #print("CLeaned participants: ", cleanedParticipants)
+        print("CLeaned participants: ", cleanedParticipants)
         print("Example Data Entry:")
         print(cleanedParticipants[0])
 

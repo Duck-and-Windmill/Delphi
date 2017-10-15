@@ -24,6 +24,7 @@ class Dataset(object):
 		prev = 0
 		batch_set = []
 		total = len(dataset)
+		print("DAtaset: ", dataset)
 		shuffle(dataset)
 
 		for i in range(int(total/self.batch_size)):
