@@ -3,7 +3,8 @@ import json
 import datetime
 import uuid
 import requests
-import dml
+from pymongo import MongoClient
+from dateutil.relativedelta import relativedelta
 
 class transformData():
     def union(R, S):
@@ -24,34 +25,44 @@ class transformData():
         seen_add = seen.add
         return [x for x in seq if not (x in seen or seen_add(x)) and x != " "]
 
-    def cleanData(t):
-        # ID, Sex, Marital Status, Birth Date, (Lng, Lat)
-        return (t["id"], t["sex"], t["marital_status"], t["birth_date"], (t["longitude"], t["latitude"]))
+    def cleanParticipants(t):
+        sex = 1 if (t["sex"] == "M") else 0
+        married = 1 if (t["marital_status"] == "M") else 0
+        birth = datetime.datetime.strptime(t["birth_date"].split("T")[0], "%Y-%m-%d")
+        age = relativedelta(datetime.datetime.now(), birth).years
+        return (t["id"], sex, married, age, (t["longitude"], t["latitude"]))
 
     @staticmethod
     def execute():
-        client = dml.pymongo.MongoClient()
+        client = MongoClient()
         repo = client.repo
 
+        print("Loading Data...")
+
         participants = repo['delphi.participants']
+        print("Loaded Participants")
         policies = repo['delphi.policies']
+        print("Loaded Policies")
         activities = repo['delphi.activities']
+        print("Loaded Activities")
+
+        print("Transforming Participants...")
+        cleanedParticipants = transformData.project(participants.find(), transformData.cleanParticipants)
+
+        print("Saving Cleaned Participants...")
+        repo.drop_collection("cleanedParticipants")
+        repo.create_collection("cleanedParticipants")
+        repo['delphi.cleanedParticipants'].insert_many(cleanedParticipants)
+
+        """repo.dropCollection("activities")
+        repo.createCollection("activities")
+        repo['delphi.activities'].insert_many(activities)
 
         repo.dropCollection("activities")
         repo.createCollection("activities")
-        repo['delphi.activities'].insert_many(activities)
-        repo['delphi.activities'].metadata({'complete':True})
+        repo['delphi.activities'].insert_many(activities)"""
 
-        repo.dropCollection("activities")
-        repo.createCollection("activities")
-        repo['delphi.activities'].insert_many(activities)
-        repo['delphi.activities'].metadata({'complete':True})
-
-        repo.dropCollection("activities")
-        repo.createCollection("activities")
-        repo['delphi.activities'].insert_many(activities)
-        repo['delphi.activities'].metadata({'complete':True})
-
+        print("Done")
         repo.logout()
 
 transformData.execute()
