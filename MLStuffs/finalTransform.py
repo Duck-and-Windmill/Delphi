@@ -1,11 +1,4 @@
-import urllib.request
-import json
-import datetime
-import uuid
-import requests
 from pymongo import MongoClient
-from dateutil.relativedelta import relativedelta
-import itertools
 
 class finalTransform():
     @staticmethod
@@ -16,7 +9,7 @@ class finalTransform():
         print("Loading Data...")
         cleanedParticipants = repo['delphi.cleanedParticipants']
         print("Loaded Participants")
-        policies = repo['delphi.policies'].find({"promo_codes": {"$exists": True}})
+        policies = repo['delphi.policies'].find()
         print("Loaded Policies")
         activities = repo['delphi.activities']
         print("Loaded Activities")
@@ -44,7 +37,9 @@ class finalTransform():
             if activity:
                 count += 1
                 print("Progress:", count/len(projectedParticipantsAndPolicies))
-                person["activity_type"] = activity["activity_type"]
+                person["activity_type"] = activity["activity_type"]              
+                person["lng"] = float(person["lng"])
+                person["lat"] = float(person["lat"])
                 person.pop("_id", None)
                 finalSet.append(person)
         print("Product Generated")
@@ -58,7 +53,7 @@ class finalTransform():
 
         print("Done")
         repo.logout()
-        
+
 try:
     finalTransform.execute()
 except BulkWriteError as bwe:
