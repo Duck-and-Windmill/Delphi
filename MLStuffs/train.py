@@ -30,6 +30,7 @@ class Trainer(object):
 
 				hypo = self.model(sample)
 				loss = self.model.loss(hypo, target)
+				
 
 				loss.backward()
 
