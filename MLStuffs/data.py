@@ -3,7 +3,7 @@ from numpy import pi, exp, cos, sin, concatenate, asarray
 from numpy.random import normal, randn, choice, shuffle
 from torch.autograd import Variable
 from torch import FloatTensor, LongTensor
-from getData import getData
+from getData import getData 
 import matplotlib.pyplot as plt
 
 
@@ -25,10 +25,9 @@ class Dataset(object):
 		batch_set = []
 		total = len(dataset)
 
-		# Must randomize dataset each epoch
 		shuffle(dataset)
 
-		for i in range(total/self.batch_size):
+		for i in range(int(total/self.batch_size)):
 			points = dataset[prev:prev+self.batch_size] if prev+self.batch_size < total else dataset[prev:]
 			x_coord = []
 			y_coord = []

@@ -22,15 +22,14 @@ class Trainer(object):
 		self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
 
 		for e in range(self.epochs):
-			for b, (sample, target) in enumerate(self.dataset.load_dataset('vitech')):
+			for b, (num, sex, marital_status, age, longitude, latitude, target) in enumerate(self.dataset.load_dataset('train')):
 
-				sample, target = Variable(sample), Variable(target)
+				num, sex, marital_status, age, longitude, latitude, target = Variable(num), Variable(sex), Variable(marital_status), Variable(age), Variable(longitude), Variable(latitude), Variable(target)
 
 				optimizer.zero_grad()
 
-				hypo = self.model(sample)
+				hypo = self.model(num, sex, marital_status, age, longitude, latitude)
 				loss = self.model.loss(hypo, target)
-				
 
 				loss.backward()
 

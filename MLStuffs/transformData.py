@@ -54,14 +54,6 @@ class transformData():
         repo.create_collection("delphi.cleanedParticipants")
         repo['delphi.cleanedParticipants'].insert_many(cleanedParticipants)
 
-        """repo.dropCollection("activities")
-        repo.createCollection("activities")
-        repo['delphi.activities'].insert_many(activities)
-
-        repo.dropCollection("activities")
-        repo.createCollection("activities")
-        repo['delphi.activities'].insert_many(activities)"""
-
         print("Done")
         repo.logout()
 
