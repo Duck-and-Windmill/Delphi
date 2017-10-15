@@ -29,7 +29,7 @@ class createMapCoords():
         count = 0
         totalCount = capitals.count()
         for capital in capitals:
-            bounds = (float(capital['long']), float(capital['lat']), float(capital['long']), float(capital['lat']))
+            bounds = (float(capital['lng']), float(capital['lat']), float(capital['lng']), float(capital['lat']))
             nearestIndices = participantsRTree.nearest(bounds, 100)
             nearest = [finalData[i] for i in nearestIndices]
             activities = [t["activity_type"] for t in nearest]
@@ -42,7 +42,7 @@ class createMapCoords():
         print("Saving Capitals with Activity Type...")
         repo.drop_collection("delphi.finalCapitals")
         repo.create_collection("delphi.finalCapitals")
-        repo['delphi.finalCapitals'].insert_many(finalCapitals)
+        repo['delphi.finalCapitals'].insert_many(finalList)
 
         print("Done")
         repo.logout()
