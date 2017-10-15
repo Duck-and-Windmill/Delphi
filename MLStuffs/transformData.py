@@ -30,7 +30,7 @@ class transformData():
         married = 1 if (t["marital_status"] == "M") else 0
         birth = datetime.datetime.strptime(t["birth_date"].split("T")[0], "%Y-%m-%d")
         age = relativedelta(datetime.datetime.now(), birth).years
-        return {"id": t["id"], "sex": sex, "married": married, "age": age, "coords": (t["longitude"], t["latitude"])}
+        return {"id": t["id"], "sex": sex, "married": married, "age": age, "lng": t["longitude"], "lat": t["latitude"]}
 
     @staticmethod
     def execute():
