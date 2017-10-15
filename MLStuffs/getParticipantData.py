@@ -12,7 +12,7 @@ class getParticipantData():
         repo = client.repo
 
         print("Fetching Participant Data...")
-        participantsURL = 'https://v3v10.vitechinc.com/solr/participant/select?indent=on&q=*:*&wt=json&rows=1482000'
+        participantsURL = 'https://v3v10.vitechinc.com/solr/participant/select?indent=on&q={!join%20from=participant_id%20to=id%20fromIndex=policy_info}promo_codes:[*%20TO%20*]&wt=json&rows=39306'
         participants = requests.get(participantsURL).json()["response"]["docs"]
         print("Saving Participant Data...")        
         repo.drop_collection("delphi.participants")
